@@ -1,13 +1,10 @@
 using System.Collections;
 using UnityEngine;
 
-public class JumpEnemy : MonoBehaviour
+public class ShootEnemy : MonoBehaviour
 {
     float speed = 3f;
     float rayDistance = 0.1f;
-    float checkEnemyRayLength = 3;
-    public float jumpPowerY = 5f;
-    public float jumpPowerX = 2f;
     public LayerMask wallLayer;
     public LayerMask playerLayer;
     private Rigidbody2D rb;
@@ -24,7 +21,6 @@ public class JumpEnemy : MonoBehaviour
         {
             rotateWhenHitWall();
         }
-        JumpOnPlayer();
     }
     private void FixedUpdate()
     {
@@ -50,47 +46,7 @@ public class JumpEnemy : MonoBehaviour
             Flip();
         }
     }
-    void JumpOnPlayer()
-    {
-        Vector3 origin = transform.position;
-        RaycastHit2D[] hits = Physics2D.RaycastAll(origin, direction, checkEnemyRayLength, wallLayer | playerLayer);
-        Debug.DrawRay(origin, direction * checkEnemyRayLength, Color.blue);
-        foreach (var hit in hits)
-        {
-            if (((1 << hit.collider.gameObject.layer) & wallLayer) != 0)
-            {
-                return;
-            }
-            if (((1 << hit.collider.gameObject.layer) & playerLayer) != 0)
-            {
-                allowMove = false;
-                StartCoroutine(WaitBeforeJump());
-                return;
-            }
-        }
-    }
-    IEnumerator WaitBeforeJump()
-    {
-        while (true)
-        {
-            Debug.Log("wait before jump");
-            yield return new WaitForSeconds(0.5f);
-            Debug.Log("waiting is done");
-            StartCoroutine(JumpNow());
-            yield break;
-        }
-    }
-    IEnumerator JumpNow()
-    {
-        Debug.Log("JumpNow");
-        if (isGrounded)
-        {
-            rb.AddForce(new Vector2(direction.x * jumpPowerX, jumpPowerY), ForceMode2D.Impulse);
-        }
-        allowMove = true;
-        yield return null;
-    }
-    void OnCollisionEnter2D(Collision2D collision)
+        void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.tag == "Ground")
             isGrounded = true;

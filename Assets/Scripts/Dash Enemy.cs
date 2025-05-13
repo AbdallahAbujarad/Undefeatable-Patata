@@ -1,13 +1,12 @@
 using System.Collections;
 using UnityEngine;
 
-public class JumpEnemy : MonoBehaviour
+public class DashEnemy : MonoBehaviour
 {
     float speed = 3f;
     float rayDistance = 0.1f;
     float checkEnemyRayLength = 3;
-    public float jumpPowerY = 5f;
-    public float jumpPowerX = 2f;
+    public float dashPowerX = 300f;
     public LayerMask wallLayer;
     public LayerMask playerLayer;
     private Rigidbody2D rb;
@@ -41,7 +40,7 @@ public class JumpEnemy : MonoBehaviour
     }
     void rotateWhenHitWall()
     {
-        Vector2 origin = transform.position + new Vector3(direction.x, 0, 0);
+        Vector2 origin = transform.position + new Vector3(direction.x,0,0) ;
         RaycastHit2D hit = Physics2D.Raycast(origin, direction, rayDistance, wallLayer);
         Debug.DrawRay(origin, direction * rayDistance, Color.red);
         if (hit.collider != null)
@@ -64,28 +63,28 @@ public class JumpEnemy : MonoBehaviour
             if (((1 << hit.collider.gameObject.layer) & playerLayer) != 0)
             {
                 allowMove = false;
-                StartCoroutine(WaitBeforeJump());
+                StartCoroutine(WaitBeforeDash());
                 return;
             }
         }
     }
-    IEnumerator WaitBeforeJump()
+    IEnumerator WaitBeforeDash()
     {
         while (true)
         {
-            Debug.Log("wait before jump");
+            Debug.Log("wait before dash");
             yield return new WaitForSeconds(0.5f);
             Debug.Log("waiting is done");
-            StartCoroutine(JumpNow());
+            StartCoroutine(DashNow());
             yield break;
         }
     }
-    IEnumerator JumpNow()
+    IEnumerator DashNow()
     {
-        Debug.Log("JumpNow");
+        Debug.Log("DashNow");
         if (isGrounded)
         {
-            rb.AddForce(new Vector2(direction.x * jumpPowerX, jumpPowerY), ForceMode2D.Impulse);
+            rb.AddForce(new Vector2(direction.x * dashPowerX, 0), ForceMode2D.Impulse);
         }
         allowMove = true;
         yield return null;
